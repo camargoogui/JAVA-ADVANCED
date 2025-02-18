@@ -1,12 +1,16 @@
 package br.com.fiap.api_rest.controller;
 
+import br.com.fiap.api_rest.dto.ClienteRequest;
+import br.com.fiap.api_rest.dto.ClienteResponse;
 import br.com.fiap.api_rest.model.Cliente;
 import br.com.fiap.api_rest.repository.ClienteRepository;
+import br.com.fiap.api_rest.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,29 +19,37 @@ import java.util.Optional;
 public class ClienteController {
     @Autowired
     ClienteRepository clienteRepository;
+    @Autowired
+    ClienteService clienteService;
 
     // Create Read Update Delete
     // Post, Get, Put, Delete
 
     @PostMapping
-    public ResponseEntity<Cliente> createCliente(@RequestBody Cliente cliente) {
-        Cliente clienteSalvo = clienteRepository.save(cliente);
+    public ResponseEntity<Cliente> createCliente(@RequestBody ClienteRequest cliente) {
+        Cliente clienteSalvo = clienteRepository.save(clienteService.requestToCliente(cliente));
         return new ResponseEntity<>(clienteSalvo, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Cliente>> readClientes() {
+    public ResponseEntity<List<ClienteResponse>> readClientes() {
         List<Cliente> clientes = clienteRepository.findAll();
-        return new ResponseEntity<>(clientes, HttpStatus.OK);
+        List<ClienteResponse> clientesResponse = new ArrayList<>();
+        for (Cliente cliente : clientes) {
+            clientesResponse.add(clienteService.clienteToResponse(cliente));
+        }
+        return new ResponseEntity<>(clientesResponse, HttpStatus.OK);
     }
 
+    // PathVarible = parametro na URL, ex: /clientes/1
+    // RequestParam = parametro como query, ex: /clientes/?id=1
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> readCliente(@PathVariable Long id) {
+    public ResponseEntity<ClienteResponse> readCliente(@PathVariable Long id) {
         Optional<Cliente> cliente = clienteRepository.findById(id);
         if (cliente.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(cliente.get(), HttpStatus.OK);
+        return new ResponseEntity<>(clienteService.clienteToResponse(cliente.get()), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
