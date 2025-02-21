@@ -5,6 +5,7 @@ import br.com.fiap.api_rest.dto.ClienteResponse;
 import br.com.fiap.api_rest.model.Cliente;
 import br.com.fiap.api_rest.repository.ClienteRepository;
 import br.com.fiap.api_rest.service.ClienteService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +23,11 @@ public class ClienteController {
     @Autowired
     ClienteService clienteService;
 
-    // Create Read Update Delete
-    // Post, Get, Put, Delete
+    // Create, Read, Update, Delete - CRUD
+    // Post, Get, Put, Delete - Verbos HTTP correspondentes
 
     @PostMapping
-    public ResponseEntity<Cliente> createCliente(@RequestBody ClienteRequest cliente) {
+    public ResponseEntity<Cliente> createCliente(@Valid @RequestBody ClienteRequest cliente) {
         Cliente clienteSalvo = clienteRepository.save(clienteService.requestToCliente(cliente));
         return new ResponseEntity<>(clienteSalvo, HttpStatus.CREATED);
     }
@@ -34,15 +35,11 @@ public class ClienteController {
     @GetMapping
     public ResponseEntity<List<ClienteResponse>> readClientes() {
         List<Cliente> clientes = clienteRepository.findAll();
-        List<ClienteResponse> clientesResponse = new ArrayList<>();
-        for (Cliente cliente : clientes) {
-            clientesResponse.add(clienteService.clienteToResponse(cliente));
-        }
-        return new ResponseEntity<>(clientesResponse, HttpStatus.OK);
+        return new ResponseEntity<>(clienteService.clientesToResponse(clientes), HttpStatus.OK);
     }
 
-    // PathVarible = parametro na URL, ex: /clientes/1
-    // RequestParam = parametro como query, ex: /clientes/?id=1
+    // PathVariable = parâmetro diretamente na URL, ex: /clientes/1
+    // RequestParam = parâmetro como query, ex: /clientes/?id=1
     @GetMapping("/{id}")
     public ResponseEntity<ClienteResponse> readCliente(@PathVariable Long id) {
         Optional<Cliente> cliente = clienteRepository.findById(id);
@@ -53,7 +50,8 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> updateCliente(@PathVariable Long id, @RequestBody Cliente cliente) {
+    public ResponseEntity<Cliente> updateCliente(@PathVariable Long id,
+                                                 @RequestBody Cliente cliente) {
         Optional<Cliente> clienteExistente = clienteRepository.findById(id);
         if (clienteExistente.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

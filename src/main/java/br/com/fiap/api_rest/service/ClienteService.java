@@ -3,6 +3,7 @@ package br.com.fiap.api_rest.service;
 import br.com.fiap.api_rest.dto.ClienteRequest;
 import br.com.fiap.api_rest.dto.ClienteResponse;
 import br.com.fiap.api_rest.model.Cliente;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,7 +13,8 @@ import java.util.stream.Collectors;
 @Service
 public class ClienteService {
     public Cliente requestToCliente(ClienteRequest clienteRequest) {
-        return new Cliente (null, clienteRequest.getNome(), clienteRequest.getIdade());
+        Cliente cliente = new Cliente();
+        return new BeanUtils.copyProperties(clienteRequest, new Cliente());
     }
 
     public ClienteResponse clienteToResponse(Cliente cliente) {
