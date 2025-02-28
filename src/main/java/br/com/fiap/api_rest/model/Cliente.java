@@ -22,6 +22,4 @@ public class Cliente {
     private String senha;
     private String cpf;
     private Categoria categoria;
-
-
 }
