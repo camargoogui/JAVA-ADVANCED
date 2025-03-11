@@ -2,12 +2,8 @@ package br.com.fiap.api_rest.dto;
 
 import br.com.fiap.api_rest.model.Categoria;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.hibernate.validator.constraints.br.CPF;
 
-@Data
-@AllArgsConstructor
 public class ClienteRequest {
     @NotBlank(message = "O nome é obrigatório")
     @Size(min = 3, max = 150,
@@ -25,4 +21,64 @@ public class ClienteRequest {
     private String cpf;
     @NotNull(message = "A categoria é obrigatória")
     private Categoria categoria;
+
+    public ClienteRequest() {
+    }
+
+    public ClienteRequest(String nome, int idade, String email, String senha, String cpf, Categoria categoria) {
+        this.nome = nome;
+        this.idade = idade;
+        this.email = email;
+        this.senha = senha;
+        this.cpf = cpf;
+        this.categoria = categoria;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public int getIdade() {
+        return idade;
+    }
+
+    public void setIdade(int idade) {
+        this.idade = idade;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
 }
